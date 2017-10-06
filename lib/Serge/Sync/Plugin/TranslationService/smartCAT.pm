@@ -17,6 +17,7 @@ sub init {
     $self->{optimizations} = 1; # set to undef to disable optimizations
 
     $self->merge_schema({
+        po_path        => 'STRING',
         project_id     => 'STRING',
         manage_pl_path => 'STRING',
         token_id       => 'STRING',
@@ -29,11 +30,13 @@ sub validate_data {
 
     $self->SUPER::validate_data;
 
+    $self->{data}->{po_path} = subst_macros($self->{data}->{po_path});
     $self->{data}->{project_id} = subst_macros($self->{data}->{project_id});
     $self->{data}->{manage_pl_path} = subst_macros($self->{data}->{manage_pl_path});
     $self->{data}->{token_id} = subst_macros($self->{data}->{token_id});
     $self->{data}->{token} = subst_macros($self->{data}->{token});
 
+    die "'po_path' not defined" unless defined $self->{data}->{po_path};
     die "'project_id' not defined" unless defined $self->{data}->{project_id};
     die "'manage_pl_path' not defined" unless defined $self->{data}->{manage_pl_path};
     die "'manage_pl_path', which is set to '$self->{data}->{manage_pl_path}', does not point to a valid file.\n" unless -f $self->{data}->{manage_pl_path};
@@ -53,10 +56,11 @@ sub run_manage_pl {
         }
     }
 
-    $command .= " --token_id=" + $self->{data}->{token_id};
-    $command .= " --token=" + $self->{data}->{token};
+    $command .= " --token_id=".$self->{data}->{token_id};
+    $command .= " --token=".$self->{data}->{token};
+    $command .= " --po_path=".$self->{data}->{po_path};
 
-    $command = $self->{data}->{manage_pl_path}.' '.$command;
+    $command = 'perl '.$self->{data}->{manage_pl_path}.' '.$command;
     print "Running '$command'...\n";
     return $self->run_cmd($command, $capture);
 }
