@@ -6,7 +6,7 @@ use strict;
 use Serge::Util qw(subst_macros);
 
 sub name {
-    return 'SmartCAT translation server (http://smartcat.io/) .po synchronization plugin';
+    return 'SmartCAT translation server (http://smartcat.ai/) .po synchronization plugin';
 }
 
 sub init {
